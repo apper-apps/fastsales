@@ -62,3 +62,94 @@ body {
 .Toastify__progress-bar {
   background: rgba(255, 255, 255, 0.7);
 }
+
+/* Pipeline Drag and Drop Styles */
+.pipeline-column {
+  transition: all 0.2s ease;
+}
+
+.pipeline-column.drag-over {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 2px dashed #3b82f6;
+  transform: scale(1.02);
+}
+
+.pipeline-lead-card {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.pipeline-lead-card:active {
+  cursor: grabbing;
+}
+
+.pipeline-lead-card.dragging {
+  opacity: 0.6;
+  transform: rotate(5deg);
+  z-index: 1000;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.pipeline-lead-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pipeline-stage-header {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pipeline-progress-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.pipeline-empty-state {
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  background: rgba(249, 250, 251, 0.5);
+  transition: all 0.2s ease;
+}
+
+.pipeline-empty-state:hover {
+  border-color: #d1d5db;
+  background: rgba(243, 244, 246, 0.5);
+}
+
+/* Mobile responsiveness for pipeline */
+@media (max-width: 768px) {
+  .pipeline-columns {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 1rem;
+    gap: 1rem;
+  }
+  
+  .pipeline-column {
+    min-width: 280px;
+    flex-shrink: 0;
+  }
+}
+
+/* Smooth scrollbar for mobile */
+.pipeline-columns::-webkit-scrollbar {
+  height: 8px;
+}
+
+.pipeline-columns::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.pipeline-columns::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.pipeline-columns::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

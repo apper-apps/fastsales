@@ -1,5 +1,4 @@
 import leadsData from "@/services/mockData/leads.json";
-
 class LeadsService {
   constructor() {
     this.leads = [...leadsData];
@@ -121,7 +120,38 @@ async getById(id) {
       throw new Error("Lead not found");
     }
     this.leads.splice(index, 1);
-    return true;
+return true;
+  }
+
+  async updateStage(id, newStatus) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const index = this.leads.findIndex(lead => lead.Id === parseInt(id));
+    if (index === -1) {
+      throw new Error("Lead not found");
+    }
+    
+    const oldStatus = this.leads[index].status;
+    this.leads[index] = {
+      ...this.leads[index],
+      status: newStatus,
+      lastContacted: new Date().toISOString()
+    };
+
+    // Add stage transition to contact history
+    const transitionRecord = {
+      type: "stage_change",
+      action: "moved",
+      date: new Date().toISOString(),
+      description: `Moved from "${oldStatus}" to "${newStatus}"`,
+      outcome: "neutral"
+    };
+
+    if (!this.leads[index].contactHistory) {
+      this.leads[index].contactHistory = [];
+    }
+    this.leads[index].contactHistory.unshift(transitionRecord);
+
+    return { ...this.leads[index] };
   }
 }
 

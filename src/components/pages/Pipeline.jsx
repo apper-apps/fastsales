@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import PipelineView from "@/components/organisms/PipelineView";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
@@ -28,9 +29,19 @@ const Pipeline = () => {
     loadLeads();
   }, []);
 
+const handleStageChange = async (leadId, newStatus, leadName) => {
+    try {
+      await leadsService.updateStage(leadId, newStatus);
+      await loadLeads(); // Refresh the leads data
+      toast.success(`${leadName} moved to ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating lead stage:', error);
+      toast.error('Failed to update lead stage');
+    }
+  };
+
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadLeads} />;
-
   return (
     <div className="space-y-6">
       <div>
@@ -49,7 +60,7 @@ const Pipeline = () => {
           icon="GitBranch"
         />
       ) : (
-        <PipelineView leads={leads} />
+<PipelineView leads={leads} onStageChange={handleStageChange} />
       )}
     </div>
   );
