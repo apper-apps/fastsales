@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
+import { Card } from "@/components/atoms/Card";
 import Input from "@/components/atoms/Input";
 import Label from "@/components/atoms/Label";
 import StatusBadge from "@/components/molecules/StatusBadge";
