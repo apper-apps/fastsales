@@ -1,11 +1,14 @@
+import 'react-toastify/dist/ReactToastify.css'
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import Appointments from "@/components/pages/Appointments";
+import "@/index.css";
 import Header from "@/components/organisms/Header";
 import Sidebar from "@/components/organisms/Sidebar";
+import Pipeline from "@/components/pages/Pipeline";
 import Dashboard from "@/components/pages/Dashboard";
 import Leads from "@/components/pages/Leads";
-import Pipeline from "@/components/pages/Pipeline";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,6 +27,7 @@ function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/leads" element={<Leads />} />
                 <Route path="/pipeline" element={<Pipeline />} />
+                <Route path="/appointments" element={<Appointments />} />
               </Routes>
             </div>
           </main>

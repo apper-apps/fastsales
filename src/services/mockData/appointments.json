@@ -1,0 +1,106 @@
+[
+  {
+    "Id": 1,
+    "leadId": 3,
+    "type": "presentation",
+    "title": "Product Presentation - Michael Brown",
+    "description": "Comprehensive product presentation focusing on business opportunity and starter packages.",
+    "scheduledDateTime": "2024-01-25T14:00:00Z",
+    "duration": 90,
+    "status": "scheduled",
+    "location": "Coffee Shop Downtown",
+    "notes": "Bring product samples and business plan materials",
+    "createdAt": "2024-01-17T11:30:00Z",
+    "updatedAt": "2024-01-17T11:30:00Z",
+    "reminders": [
+      { "type": "email", "minutes": 1440 },
+      { "type": "sms", "minutes": 60 }
+    ]
+  },
+  {
+    "Id": 2,
+    "leadId": 6,
+    "type": "follow_up",
+    "title": "Follow-up Call - Jennifer Miller",
+    "description": "Follow up on product samples sent and discuss pricing options.",
+    "scheduledDateTime": "2024-01-23T10:30:00Z",
+    "duration": 30,
+    "status": "confirmed",
+    "location": "Phone Call",
+    "notes": "Samples were sent last week, focus on skincare line",
+    "createdAt": "2024-01-18T10:20:00Z",
+    "updatedAt": "2024-01-20T09:15:00Z",
+    "reminders": [
+      { "type": "email", "minutes": 60 }
+    ]
+  },
+  {
+    "Id": 3,
+    "leadId": 2,
+    "type": "meeting",
+    "title": "Business Opportunity Meeting - Sarah Johnson",
+    "description": "Discuss distributor opportunity and compensation plan details.",
+    "scheduledDateTime": "2024-01-24T16:00:00Z",
+    "duration": 60,
+    "status": "scheduled",
+    "location": "Local Café",
+    "notes": "Interested in recruiting others, has strong network",
+    "createdAt": "2024-01-16T09:15:00Z",
+    "updatedAt": "2024-01-16T09:15:00Z",
+    "reminders": [
+      { "type": "email", "minutes": 1440 },
+      { "type": "sms", "minutes": 120 }
+    ]
+  },
+  {
+    "Id": 4,
+    "leadId": 7,
+    "type": "closing",
+    "title": "Enrollment Meeting - Robert Taylor",
+    "description": "Final enrollment meeting to complete distributor registration.",
+    "scheduledDateTime": "2024-01-22T11:00:00Z",
+    "duration": 60,
+    "status": "completed",
+    "location": "Office",
+    "notes": "Successfully enrolled in leadership track program",
+    "createdAt": "2024-01-19T14:15:00Z",
+    "updatedAt": "2024-01-22T11:30:00Z",
+    "completedAt": "2024-01-22T11:30:00Z",
+    "reminders": []
+  },
+  {
+    "Id": 5,
+    "leadId": 9,
+    "type": "consultation",
+    "title": "Fitness Products Consultation - Christopher Lee",
+    "description": "Product consultation focusing on energy and wellness products for fitness professionals.",
+    "scheduledDateTime": "2024-01-26T15:30:00Z",
+    "duration": 45,
+    "status": "scheduled",
+    "location": "Video Call",
+    "notes": "Focus on products for fitness professionals and clients",
+    "createdAt": "2024-01-20T09:45:00Z",
+    "updatedAt": "2024-01-20T09:45:00Z",
+    "reminders": [
+      { "type": "email", "minutes": 720 },
+      { "type": "sms", "minutes": 30 }
+    ]
+  },
+  {
+    "Id": 6,
+    "leadId": 1,
+    "type": "follow_up",
+    "title": "Initial Follow-up - John Smith",
+    "description": "Follow up on initial contact attempt and voicemail.",
+    "scheduledDateTime": "2024-01-17T13:00:00Z",
+    "duration": 30,
+    "status": "cancelled",
+    "location": "Phone Call",
+    "notes": "Lead requested to be contacted next week instead",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-16T14:20:00Z",
+    "cancelledAt": "2024-01-16T14:20:00Z",
+    "cancellationReason": "Lead requested reschedule",
+    "reminders": []
+  }
+]

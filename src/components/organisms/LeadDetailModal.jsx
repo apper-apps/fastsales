@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
+import appointmentsService from "@/services/api/appointmentsService";
+import AppointmentScheduleModal from "@/components/organisms/AppointmentScheduleModal";
 import leadsService from "@/services/api/leadsService";
 import ApperIcon from "@/components/ApperIcon";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import AddActivityModal from "@/components/organisms/AddActivityModal";
+import Loading from "@/components/ui/Loading";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Label from "@/components/atoms/Label";
@@ -12,11 +15,33 @@ import { Card } from "@/components/atoms/Card";
 
 const LeadDetailModal = ({ isOpen, onClose, lead, onLeadUpdate }) => {
   const [activeTab, setActiveTab] = useState("details");
-const [newNote, setNewNote] = useState("");
+  const [newNote, setNewNote] = useState("");
   const [editingNote, setEditingNote] = useState(null);
   const [editContent, setEditContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+
+  const loadAppointments = async () => {
+    if (!lead?.Id) return;
+    try {
+      setAppointmentsLoading(true);
+      const data = await appointmentsService.getByLeadId(lead.Id);
+      setAppointments(data);
+    } catch (error) {
+      console.error('Error loading appointments:', error);
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (isOpen && lead?.Id) {
+      loadAppointments();
+    }
+  }, [isOpen, lead?.Id]);
+
   if (!isOpen || !lead) return null;
 
   const handleAddNote = async (e) => {
@@ -92,6 +117,7 @@ const cancelEdit = () => {
       throw error;
     }
   };
+
   const formatDate = (dateString) => {
     return format(new Date(dateString), "MMM dd, yyyy 'at' h:mm a");
   };
@@ -99,9 +125,76 @@ const cancelEdit = () => {
   const tabs = [
     { id: "details", label: "Lead Details", icon: "User" },
     { id: "history", label: "Contact History", icon: "Clock" },
+    { id: "appointments", label: "Appointments", icon: "Calendar" },
     { id: "notes", label: "Notes", icon: "FileText" }
   ];
 
+  const handleAppointmentAdd = async (leadId, appointmentData) => {
+    try {
+      await loadAppointments();
+      return appointmentData;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleAppointmentUpdate = async (appointmentId, status) => {
+    try {
+      await appointmentsService.updateStatus(appointmentId, status);
+      await loadAppointments();
+      toast.success(`Appointment ${status} successfully!`);
+    } catch (error) {
+      toast.error("Failed to update appointment");
+    }
+  };
+
+  const handleAppointmentDelete = async (appointmentId) => {
+    if (!window.confirm("Are you sure you want to delete this appointment?")) return;
+    
+    try {
+      await appointmentsService.delete(appointmentId);
+      await loadAppointments();
+      toast.success("Appointment deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete appointment");
+    }
+  };
+
+  const getAppointmentStatusColor = (status) => {
+    switch (status) {
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-800';
+      case 'confirmed':
+        return 'bg-green-100 text-green-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      case 'rescheduled':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getAppointmentIcon = (type) => {
+    switch (type) {
+      case 'presentation':
+        return 'Presentation';
+      case 'follow_up':
+        return 'Phone';
+      case 'meeting':
+        return 'Users';
+      case 'consultation':
+        return 'MessageCircle';
+      case 'training':
+        return 'BookOpen';
+      case 'closing':
+        return 'Handshake';
+      default:
+        return 'Calendar';
+    }
+  };
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
@@ -206,8 +299,8 @@ const cancelEdit = () => {
             </div>
           )}
 
-          {activeTab === "history" && (
-<div className="space-y-4">
+{activeTab === "history" && (
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-medium text-gray-900 flex items-center">
                   <ApperIcon name="Clock" size={16} className="mr-2" />
@@ -225,8 +318,8 @@ const cancelEdit = () => {
               {lead.contactHistory && lead.contactHistory.length > 0 ? (
                 <div className="space-y-4">
                   {lead.contactHistory.map((contact, index) => (
-                    <div key={index} className="flex items-start space-x-4 pb-4 border-b border-gray-100 last:border-b-0">
-<div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+<div key={index} className="flex items-start space-x-4 pb-4 border-b border-gray-100 last:border-b-0">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         contact.outcome === 'positive' ? 'bg-green-100' : 
                         contact.outcome === 'negative' ? 'bg-red-100' : 'bg-primary-100'
                       }`}>
@@ -279,6 +372,121 @@ const cancelEdit = () => {
                 </div>
               )}
             </div>
+)}
+
+          {activeTab === "appointments" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-900 flex items-center">
+                  <ApperIcon name="Calendar" size={16} className="mr-2" />
+                  Scheduled Appointments
+                </h3>
+                <Button
+                  size="sm"
+                  onClick={() => setIsAppointmentModalOpen(true)}
+                  className="flex items-center"
+                >
+                  <ApperIcon name="Plus" size={14} className="mr-1" />
+                  Schedule Appointment
+                </Button>
+              </div>
+
+              {appointmentsLoading ? (
+                <div className="text-center py-8">
+                  <ApperIcon name="Loader2" size={24} className="mx-auto text-gray-400 animate-spin mb-2" />
+                  <p className="text-gray-500">Loading appointments...</p>
+                </div>
+              ) : appointments.length > 0 ? (
+                <div className="space-y-4">
+                  {appointments.map((appointment) => (
+                    <Card key={appointment.Id} className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <ApperIcon 
+                              name={getAppointmentIcon(appointment.type)} 
+                              size={18} 
+                              className="text-primary-600" 
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <h4 className="font-medium text-gray-900">{appointment.title}</h4>
+                              <span className={`px-2 py-1 text-xs rounded-full ${getAppointmentStatusColor(appointment.status)}`}>
+                                {appointment.status}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">
+                              {format(new Date(appointment.scheduledDateTime), "MMM dd, yyyy 'at' h:mm a")} 
+                              • {appointment.duration} minutes
+                            </p>
+                            {appointment.location && (
+                              <p className="text-sm text-gray-500 mb-2 flex items-center">
+                                <ApperIcon name="MapPin" size={14} className="mr-1" />
+                                {appointment.location}
+                              </p>
+                            )}
+                            {appointment.description && (
+                              <p className="text-sm text-gray-600">{appointment.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {appointment.status === 'scheduled' && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAppointmentUpdate(appointment.Id, 'confirmed')}
+                                className="text-green-600 hover:text-green-700"
+                                title="Confirm appointment"
+                              >
+                                <ApperIcon name="Check" size={14} />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAppointmentUpdate(appointment.Id, 'cancelled')}
+                                className="text-red-600 hover:text-red-700"
+                                title="Cancel appointment"
+                              >
+                                <ApperIcon name="X" size={14} />
+                              </Button>
+                            </>
+                          )}
+                          {appointment.status === 'confirmed' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleAppointmentUpdate(appointment.Id, 'completed')}
+                              className="text-green-600 hover:text-green-700"
+                              title="Mark as completed"
+                            >
+                              <ApperIcon name="CheckCircle" size={14} />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleAppointmentDelete(appointment.Id)}
+                            className="text-gray-400 hover:text-red-600"
+                            title="Delete appointment"
+                          >
+                            <ApperIcon name="Trash2" size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <ApperIcon name="Calendar" size={48} className="mx-auto text-gray-300 mb-4" />
+                  <p className="text-gray-500">No appointments scheduled</p>
+                  <p className="text-sm text-gray-400 mt-1">Schedule your first appointment with this lead</p>
+                </div>
+              )}
+            </div>
           )}
 
           {activeTab === "notes" && (
@@ -323,7 +531,7 @@ const cancelEdit = () => {
                         )}
                       </Button>
                     </div>
-</form>
+                  </form>
                 </Card>
 
                 {/* Notes List */}
@@ -409,14 +617,21 @@ const cancelEdit = () => {
           )}
         </div>
       </div>
-
-      <AddActivityModal
+<AddActivityModal
         isOpen={isActivityModalOpen}
         onClose={() => setIsActivityModalOpen(false)}
         lead={lead}
         onActivityAdd={handleActivityAdd}
       />
+
+      <AppointmentScheduleModal
+        isOpen={isAppointmentModalOpen}
+        onClose={() => setIsAppointmentModalOpen(false)}
+        lead={lead}
+        onAppointmentAdd={handleAppointmentAdd}
+      />
     </div>
+  );
 };
 
 export default LeadDetailModal;

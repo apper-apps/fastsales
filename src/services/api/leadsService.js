@@ -211,6 +211,22 @@ async addActivity(leadId, activityData) {
 
     return { ...this.leads[leadIndex] };
   }
+async addAppointment(leadId, appointmentData) {
+    const lead = await this.getById(leadId);
+    if (!lead.appointments) {
+      lead.appointments = [];
+    }
+
+    const appointment = {
+      id: Date.now(),
+      ...appointmentData,
+      createdAt: new Date().toISOString()
+    };
+
+    lead.appointments.push(appointment);
+    const updatedLead = await this.update(leadId, { appointments: lead.appointments });
+    return updatedLead;
+  }
 }
 
 export default new LeadsService();
