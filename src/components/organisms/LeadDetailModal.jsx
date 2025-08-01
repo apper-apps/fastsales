@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
+import AddActivityModal from '@/components/organisms/AddActivityModal'
 import { format } from "date-fns";
 import Button from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
@@ -11,11 +12,11 @@ import { toast } from "react-toastify";
 
 const LeadDetailModal = ({ isOpen, onClose, lead, onLeadUpdate }) => {
   const [activeTab, setActiveTab] = useState("details");
-  const [newNote, setNewNote] = useState("");
+const [newNote, setNewNote] = useState("");
   const [editingNote, setEditingNote] = useState(null);
   const [editContent, setEditContent] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   if (!isOpen || !lead) return null;
 
   const handleAddNote = async (e) => {
@@ -77,11 +78,20 @@ const LeadDetailModal = ({ isOpen, onClose, lead, onLeadUpdate }) => {
     }
   };
 
-  const cancelEdit = () => {
+const cancelEdit = () => {
     setEditingNote(null);
     setEditContent("");
   };
 
+  const handleActivityAdd = async (leadId, activityData) => {
+    try {
+      const updatedLead = await leadsService.addActivity(leadId, activityData);
+      onLeadUpdate(updatedLead);
+      return updatedLead;
+    } catch (error) {
+      throw error;
+    }
+  };
   const formatDate = (dateString) => {
     return format(new Date(dateString), "MMM dd, yyyy 'at' h:mm a");
   };
@@ -197,17 +207,47 @@ const LeadDetailModal = ({ isOpen, onClose, lead, onLeadUpdate }) => {
           )}
 
           {activeTab === "history" && (
-            <div className="space-y-4">
-              <h3 className="font-medium text-gray-900 flex items-center">
-                <ApperIcon name="Clock" size={16} className="mr-2" />
-                Contact History Timeline
-              </h3>
+<div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-gray-900 flex items-center">
+                  <ApperIcon name="Clock" size={16} className="mr-2" />
+                  Contact History Timeline
+                </h3>
+                <Button
+                  size="sm"
+                  onClick={() => setIsActivityModalOpen(true)}
+                  className="flex items-center"
+                >
+                  <ApperIcon name="Plus" size={14} className="mr-1" />
+                  Log Activity
+                </Button>
+              </div>
               {lead.contactHistory && lead.contactHistory.length > 0 ? (
                 <div className="space-y-4">
                   {lead.contactHistory.map((contact, index) => (
                     <div key={index} className="flex items-start space-x-4 pb-4 border-b border-gray-100 last:border-b-0">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <ApperIcon name={contact.type === 'call' ? 'Phone' : contact.type === 'email' ? 'Mail' : 'MessageSquare'} size={14} className="text-primary-600" />
+<div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        contact.outcome === 'positive' ? 'bg-green-100' : 
+                        contact.outcome === 'negative' ? 'bg-red-100' : 'bg-primary-100'
+                      }`}>
+                        <ApperIcon 
+                          name={
+                            contact.type === 'call' ? 'Phone' : 
+                            contact.type === 'email' ? 'Mail' : 
+                            contact.type === 'text' ? 'MessageSquare' :
+                            contact.type === 'meeting' ? 'Users' :
+                            contact.type === 'social' ? 'Share2' :
+                            contact.type === 'referral' ? 'UserPlus' :
+                            contact.type === 'presentation' ? 'Presentation' :
+                            contact.type === 'enrollment' ? 'CheckCircle' :
+                            'MessageSquare'
+                          } 
+                          size={14} 
+                          className={
+                            contact.outcome === 'positive' ? 'text-green-600' : 
+                            contact.outcome === 'negative' ? 'text-red-600' : 'text-primary-600'
+                          } 
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
@@ -287,7 +327,14 @@ const LeadDetailModal = ({ isOpen, onClose, lead, onLeadUpdate }) => {
                 </Card>
               </div>
 
-              {/* Notes List */}
+)}
+
+      <AddActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={() => setIsActivityModalOpen(false)}
+        lead={lead}
+        onActivityAdd={handleActivityAdd}
+      />
               <div className="space-y-4">
                 {lead.notes && lead.notes.length > 0 ? (
                   lead.notes.map((note) => (

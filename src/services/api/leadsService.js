@@ -153,6 +153,64 @@ return true;
 
     return { ...this.leads[index] };
   }
+async addActivity(leadId, activityData) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const leadIndex = this.leads.findIndex(lead => lead.Id === parseInt(leadId));
+    if (leadIndex === -1) {
+      throw new Error("Lead not found");
+    }
+
+    const lead = this.leads[leadIndex];
+
+    // Ensure contactHistory array exists
+    if (!lead.contactHistory) {
+      lead.contactHistory = [];
+    }
+
+    // Add the new activity
+    const newActivity = {
+      ...activityData,
+      date: activityData.date || new Date().toISOString()
+    };
+
+    lead.contactHistory.push(newActivity);
+    lead.lastContacted = newActivity.date;
+
+    // Auto-update status based on activity outcome and current status
+    if (activityData.outcome === "positive") {
+      const statusProgression = {
+        "New Leads": "Initial Contact",
+        "Initial Contact": "Presentation Scheduled",
+        "Presentation Scheduled": "Presented",
+        "Presented": "Follow-up",
+        "Follow-up": "Closed Won"
+      };
+      
+      if (statusProgression[lead.status]) {
+        lead.status = statusProgression[lead.status];
+      }
+    } else if (activityData.outcome === "negative") {
+      // Move to Closed Lost if negative outcome
+      if (lead.status !== "Closed Won" && lead.status !== "Closed Lost") {
+        lead.status = "Closed Lost";
+      }
+    }
+
+    // If enrollment activity, mark as Closed Won
+    if (activityData.type === "enrollment" && activityData.action === "completed") {
+      lead.status = "Closed Won";
+      lead.closedDate = newActivity.date;
+      // Set a reasonable contract value if not exists
+      if (!lead.contractValue) {
+        lead.contractValue = 1500;
+      }
+    }
+
+    // Sort contact history by date (newest first)
+    lead.contactHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return { ...this.leads[leadIndex] };
+  }
 }
 
 export default new LeadsService();

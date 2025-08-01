@@ -86,11 +86,25 @@ const handleAddLead = async (leadData) => {
     setSelectedLead(null);
   };
 
-  const handleLeadUpdate = (updatedLead) => {
+const handleLeadUpdate = (updatedLead) => {
     setLeads(prev => prev.map(lead => 
       lead.Id === updatedLead.Id ? updatedLead : lead
     ));
     setSelectedLead(updatedLead);
+  };
+
+  const handleActivityAdd = async (leadId, activityData) => {
+    try {
+      const updatedLead = await leadsService.addActivity(leadId, activityData);
+      setLeads(prev => prev.map(lead => 
+        lead.Id === leadId ? updatedLead : lead
+      ));
+      setSelectedLead(updatedLead);
+      return updatedLead;
+    } catch (error) {
+      toast.error("Failed to log activity. Please try again.");
+      throw error;
+    }
   };
   const filteredLeads = leads.filter(lead =>
     lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -167,11 +181,12 @@ const handleAddLead = async (leadData) => {
         onSubmit={handleAddLead}
       />
 
-      <LeadDetailModal
+<LeadDetailModal
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetailModal}
         lead={selectedLead}
         onLeadUpdate={handleLeadUpdate}
+        onActivityAdd={handleActivityAdd}
       />
     </div>
   );
