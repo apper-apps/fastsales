@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import AddActivityModal from '@/components/organisms/AddActivityModal'
+import React, { useState } from "react";
 import { format } from "date-fns";
-import Button from "@/components/atoms/Button";
-import { Card } from "@/components/atoms/Card";
-import Input from "@/components/atoms/Input";
-import Label from "@/components/atoms/Label";
-import StatusBadge from "@/components/molecules/StatusBadge";
-import ApperIcon from "@/components/ApperIcon";
-import leadsService from "@/services/api/leadsService";
 import { toast } from "react-toastify";
+import leadsService from "@/services/api/leadsService";
+import ApperIcon from "@/components/ApperIcon";
+import StatusBadge from "@/components/molecules/StatusBadge";
+import AddActivityModal from "@/components/organisms/AddActivityModal";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
+import Label from "@/components/atoms/Label";
+import { Card } from "@/components/atoms/Card";
 
 const LeadDetailModal = ({ isOpen, onClose, lead, onLeadUpdate }) => {
   const [activeTab, setActiveTab] = useState("details");
@@ -323,11 +323,92 @@ const cancelEdit = () => {
                         )}
                       </Button>
                     </div>
-                  </form>
+</form>
                 </Card>
-              </div>
 
-)}
+                {/* Notes List */}
+                <div className="space-y-4">
+                  {lead.notes && lead.notes.length > 0 ? (
+                    lead.notes.map((note) => (
+                      <Card key={note.id} className="p-4">
+                        {editingNote === note.id ? (
+                          <form onSubmit={handleUpdateNote} className="space-y-3">
+                            <textarea
+                              value={editContent}
+                              onChange={(e) => setEditContent(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                              rows={3}
+                              disabled={loading}
+                            />
+                            <div className="flex justify-end space-x-2">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={cancelEdit}
+                                disabled={loading}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="submit"
+                                size="sm"
+                                disabled={!editContent.trim() || loading}
+                              >
+                                {loading ? "Saving..." : "Save"}
+                              </Button>
+                            </div>
+                          </form>
+                        ) : (
+                          <>
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className="text-gray-900 whitespace-pre-wrap">{note.content}</p>
+                                <div className="flex items-center space-x-4 mt-3 text-xs text-gray-500">
+                                  <span>Created {formatDate(note.createdAt)}</span>
+                                  {note.updatedAt !== note.createdAt && (
+                                    <span>• Updated {formatDate(note.updatedAt)}</span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-1 ml-4">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditNote(note)}
+                                  className="text-gray-400 hover:text-gray-600"
+                                  disabled={loading}
+                                >
+                                  <ApperIcon name="Edit" size={14} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteNote(note.id)}
+                                  className="text-gray-400 hover:text-red-600"
+                                  disabled={loading}
+                                >
+                                  <ApperIcon name="Trash2" size={14} />
+                                </Button>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-12">
+                      <ApperIcon name="FileText" size={48} className="mx-auto text-gray-300 mb-4" />
+                      <p className="text-gray-500">No notes added yet</p>
+                      <p className="text-sm text-gray-400 mt-1">Add your first note to track interactions with this lead</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <AddActivityModal
         isOpen={isActivityModalOpen}
@@ -335,89 +416,7 @@ const cancelEdit = () => {
         lead={lead}
         onActivityAdd={handleActivityAdd}
       />
-              <div className="space-y-4">
-                {lead.notes && lead.notes.length > 0 ? (
-                  lead.notes.map((note) => (
-                    <Card key={note.id} className="p-4">
-                      {editingNote === note.id ? (
-                        <form onSubmit={handleUpdateNote} className="space-y-3">
-                          <textarea
-                            value={editContent}
-                            onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
-                            rows={3}
-                            disabled={loading}
-                          />
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={cancelEdit}
-                              disabled={loading}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              type="submit"
-                              size="sm"
-                              disabled={!editContent.trim() || loading}
-                            >
-                              {loading ? "Saving..." : "Save"}
-                            </Button>
-                          </div>
-                        </form>
-                      ) : (
-                        <>
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className="text-gray-900 whitespace-pre-wrap">{note.content}</p>
-                              <div className="flex items-center space-x-4 mt-3 text-xs text-gray-500">
-                                <span>Created {formatDate(note.createdAt)}</span>
-                                {note.updatedAt !== note.createdAt && (
-                                  <span>• Updated {formatDate(note.updatedAt)}</span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-1 ml-4">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEditNote(note)}
-                                className="text-gray-400 hover:text-gray-600"
-                                disabled={loading}
-                              >
-                                <ApperIcon name="Edit" size={14} />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteNote(note.id)}
-                                className="text-gray-400 hover:text-red-600"
-                                disabled={loading}
-                              >
-                                <ApperIcon name="Trash2" size={14} />
-                              </Button>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </Card>
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <ApperIcon name="FileText" size={48} className="mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500">No notes added yet</p>
-                    <p className="text-sm text-gray-400 mt-1">Add your first note to track interactions with this lead</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
-  );
 };
 
 export default LeadDetailModal;
