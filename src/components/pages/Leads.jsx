@@ -3,6 +3,7 @@ import Button from "@/components/atoms/Button";
 import SearchBar from "@/components/molecules/SearchBar";
 import LeadsTable from "@/components/organisms/LeadsTable";
 import AddLeadModal from "@/components/organisms/AddLeadModal";
+import LeadDetailModal from "@/components/organisms/LeadDetailModal";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
@@ -11,12 +12,13 @@ import leadsService from "@/services/api/leadsService";
 import { toast } from "react-toastify";
 
 const Leads = () => {
-  const [leads, setLeads] = useState([]);
+const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const loadLeads = async () => {
     try {
       setLoading(true);
@@ -35,7 +37,7 @@ const Leads = () => {
     loadLeads();
   }, []);
 
-  const handleAddLead = async (leadData) => {
+const handleAddLead = async (leadData) => {
     try {
       const newLead = await leadsService.create(leadData);
       setLeads(prev => [newLead, ...prev]);
@@ -69,6 +71,27 @@ const Leads = () => {
     }
   };
 
+  const handleViewLead = async (lead) => {
+    try {
+      const detailedLead = await leadsService.getById(lead.Id);
+      setSelectedLead(detailedLead);
+      setIsDetailModalOpen(true);
+    } catch (err) {
+      toast.error("Failed to load lead details.");
+    }
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedLead(null);
+  };
+
+  const handleLeadUpdate = (updatedLead) => {
+    setLeads(prev => prev.map(lead => 
+      lead.Id === updatedLead.Id ? updatedLead : lead
+    ));
+    setSelectedLead(updatedLead);
+  };
   const filteredLeads = leads.filter(lead =>
     lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -129,18 +152,26 @@ const Leads = () => {
             icon="Users"
           />
         )
-      ) : (
+) : (
         <LeadsTable
           leads={filteredLeads}
           onUpdateStatus={handleUpdateStatus}
           onDeleteLead={handleDeleteLead}
+          onViewLead={handleViewLead}
         />
       )}
 
-      <AddLeadModal
+<AddLeadModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddLead}
+      />
+
+      <LeadDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+        lead={selectedLead}
+        onLeadUpdate={handleLeadUpdate}
       />
     </div>
   );

@@ -6,7 +6,24 @@
     "email": "john.smith@email.com",
     "status": "New",
     "dateAdded": "2024-01-15T10:30:00Z",
-    "lastContacted": "2024-01-15T10:30:00Z"
+    "lastContacted": "2024-01-15T10:30:00Z",
+    "contactHistory": [
+      {
+        "type": "call",
+        "action": "attempted",
+        "date": "2024-01-15T10:30:00Z",
+        "description": "Initial contact attempt - no answer, left voicemail",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1001,
+        "content": "Potential customer interested in MLM products. Need to follow up within 48 hours.",
+        "createdAt": "2024-01-15T10:35:00Z",
+        "updatedAt": "2024-01-15T10:35:00Z"
+      }
+    ]
   },
   {
     "Id": 2,
@@ -15,7 +32,37 @@
     "email": "sarah.johnson@email.com",
     "status": "Contacted",
     "dateAdded": "2024-01-14T14:20:00Z",
-    "lastContacted": "2024-01-16T09:15:00Z"
+    "lastContacted": "2024-01-16T09:15:00Z",
+    "contactHistory": [
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-16T09:15:00Z",
+        "description": "Had a 15-minute conversation about product benefits. Expressed interest in starter pack.",
+        "outcome": "positive"
+      },
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-14T14:20:00Z",
+        "description": "Sent initial welcome email with product catalog",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1002,
+        "content": "Very interested in health and wellness products. Has budget for starter pack. Schedule follow-up call for next week.",
+        "createdAt": "2024-01-16T09:20:00Z",
+        "updatedAt": "2024-01-16T09:20:00Z"
+      },
+      {
+        "id": 1003,
+        "content": "Mentioned she has a network of friends who might be interested. Potential recruit.",
+        "createdAt": "2024-01-16T09:25:00Z",
+        "updatedAt": "2024-01-16T09:25:00Z"
+      }
+    ]
   },
   {
     "Id": 3,
@@ -24,7 +71,44 @@
     "email": "michael.brown@email.com",
     "status": "Interested",
     "dateAdded": "2024-01-13T16:45:00Z",
-    "lastContacted": "2024-01-17T11:30:00Z"
+    "lastContacted": "2024-01-17T11:30:00Z",
+    "contactHistory": [
+      {
+        "type": "meeting",
+        "action": "completed",
+        "date": "2024-01-17T11:30:00Z",
+        "description": "In-person meeting at coffee shop. Demonstrated products and explained business opportunity.",
+        "outcome": "positive"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-15T14:00:00Z",
+        "description": "Phone screening call - 20 minutes discussing background and interests",
+        "outcome": "positive"
+      },
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-13T17:00:00Z",
+        "description": "Initial contact email with company overview",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1004,
+        "content": "Entrepreneur mindset, currently runs small consulting business. Very interested in MLM opportunity as additional income stream.",
+        "createdAt": "2024-01-17T11:45:00Z",
+        "updatedAt": "2024-01-17T11:45:00Z"
+      },
+      {
+        "id": 1005,
+        "content": "Requested business plan and compensation structure. Send materials by end of week.",
+        "createdAt": "2024-01-17T11:50:00Z",
+        "updatedAt": "2024-01-17T11:50:00Z"
+      }
+    ]
   },
   {
     "Id": 4,
@@ -33,7 +117,37 @@
     "email": "lisa.davis@email.com",
     "status": "Not Interested",
     "dateAdded": "2024-01-12T08:15:00Z",
-    "lastContacted": "2024-01-15T13:45:00Z"
+    "lastContacted": "2024-01-15T13:45:00Z",
+    "contactHistory": [
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-15T13:45:00Z",
+        "description": "Follow-up call. Expressed she's not interested in MLM opportunities at this time.",
+        "outcome": "negative"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-12T08:15:00Z",
+        "description": "Initial contact call. Seemed hesitant but agreed to think about it.",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1006,
+        "content": "Not interested in MLM business model. Had negative experience with similar company in the past.",
+        "createdAt": "2024-01-15T13:50:00Z",
+        "updatedAt": "2024-01-15T13:50:00Z"
+      },
+      {
+        "id": 1007,
+        "content": "Keep in contact list for future product-only opportunities. May be interested in just purchasing products.",
+        "createdAt": "2024-01-15T13:55:00Z",
+        "updatedAt": "2024-01-15T13:55:00Z"
+      }
+    ]
   },
   {
     "Id": 5,
@@ -42,7 +156,24 @@
     "email": "david.wilson@email.com",
     "status": "New",
     "dateAdded": "2024-01-16T12:00:00Z",
-    "lastContacted": "2024-01-16T12:00:00Z"
+    "lastContacted": "2024-01-16T12:00:00Z",
+    "contactHistory": [
+      {
+        "type": "referral",
+        "action": "received",
+        "date": "2024-01-16T12:00:00Z",
+        "description": "Referred by Sarah Johnson. Interest in fitness and nutrition products.",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1008,
+        "content": "Referral from Sarah Johnson. Personal trainer and nutritionist. Could be great for fitness product line.",
+        "createdAt": "2024-01-16T12:05:00Z",
+        "updatedAt": "2024-01-16T12:05:00Z"
+      }
+    ]
   },
   {
     "Id": 6,
@@ -51,7 +182,44 @@
     "email": "jennifer.miller@email.com",
     "status": "Contacted",
     "dateAdded": "2024-01-11T15:30:00Z",
-    "lastContacted": "2024-01-18T10:20:00Z"
+    "lastContacted": "2024-01-18T10:20:00Z",
+    "contactHistory": [
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-18T10:20:00Z",
+        "description": "Sent product samples and pricing information as requested",
+        "outcome": "positive"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-16T16:30:00Z",
+        "description": "20-minute product demonstration call. Interested in skincare line.",
+        "outcome": "positive"
+      },
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-11T15:30:00Z",
+        "description": "Initial welcome email and company introduction",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1009,
+        "content": "Beauty enthusiast with active social media presence. Great potential for skincare products and social selling.",
+        "createdAt": "2024-01-16T16:35:00Z",
+        "updatedAt": "2024-01-16T16:35:00Z"
+      },
+      {
+        "id": 1010,
+        "content": "Requested samples of anti-aging serum and moisturizer. Follow up after she tries them.",
+        "createdAt": "2024-01-18T10:25:00Z",
+        "updatedAt": "2024-01-18T10:25:00Z"
+      }
+    ]
   },
   {
     "Id": 7,
@@ -60,7 +228,44 @@
     "email": "robert.taylor@email.com",
     "status": "Interested",
     "dateAdded": "2024-01-10T09:45:00Z",
-    "lastContacted": "2024-01-19T14:15:00Z"
+    "lastContacted": "2024-01-19T14:15:00Z",
+    "contactHistory": [
+      {
+        "type": "webinar",
+        "action": "attended",
+        "date": "2024-01-19T14:15:00Z",
+        "description": "Attended business opportunity webinar. Asked several questions about getting started.",
+        "outcome": "positive"
+      },
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-17T10:00:00Z",
+        "description": "Sent webinar invitation and business overview materials",
+        "outcome": "neutral"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-12T11:15:00Z",
+        "description": "Initial screening call. Recently retired and looking for new income opportunities.",
+        "outcome": "positive"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1011,
+        "content": "Recently retired executive looking for flexible income opportunity. Has leadership experience and strong network.",
+        "createdAt": "2024-01-12T11:20:00Z",
+        "updatedAt": "2024-01-12T11:20:00Z"
+      },
+      {
+        "id": 1012,
+        "content": "Very engaged during webinar. Ready to schedule enrollment call. High potential recruit.",
+        "createdAt": "2024-01-19T14:30:00Z",
+        "updatedAt": "2024-01-19T14:30:00Z"
+      }
+    ]
   },
   {
     "Id": 8,
@@ -69,16 +274,70 @@
     "email": "amanda.garcia@email.com",
     "status": "New",
     "dateAdded": "2024-01-17T11:15:00Z",
-    "lastContacted": "2024-01-17T11:15:00Z"
+    "lastContacted": "2024-01-17T11:15:00Z",
+    "contactHistory": [
+      {
+        "type": "social",
+        "action": "connected",
+        "date": "2024-01-17T11:15:00Z",
+        "description": "Connected through LinkedIn. Expressed interest in work-from-home opportunities.",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1013,
+        "content": "Stay-at-home mom looking for flexible income. Active on social media. Perfect for social selling approach.",
+        "createdAt": "2024-01-17T11:20:00Z",
+        "updatedAt": "2024-01-17T11:20:00Z"
+      }
+    ]
   },
   {
     "Id": 9,
     "name": "Christopher Lee",
-    "phone": "(555) 901-2345", 
+    "phone": "(555) 901-2345",
     "email": "christopher.lee@email.com",
     "status": "Contacted",
     "dateAdded": "2024-01-09T13:20:00Z",
-    "lastContacted": "2024-01-20T09:45:00Z"
+    "lastContacted": "2024-01-20T09:45:00Z",
+    "contactHistory": [
+      {
+        "type": "meeting",
+        "action": "scheduled",
+        "date": "2024-01-20T09:45:00Z",
+        "description": "Scheduled in-person product demonstration for next week",
+        "outcome": "positive"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-18T15:30:00Z",
+        "description": "Follow-up call. Showed strong interest in energy and wellness products.",
+        "outcome": "positive"
+      },
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-09T13:20:00Z",
+        "description": "Initial contact through website inquiry form",
+        "outcome": "neutral"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1014,
+        "content": "Fitness enthusiast and coach. Very interested in energy and performance products for his clients.",
+        "createdAt": "2024-01-18T15:35:00Z",
+        "updatedAt": "2024-01-18T15:35:00Z"
+      },
+      {
+        "id": 1015,
+        "content": "Trains other fitness professionals. Could be excellent distributor with built-in customer base.",
+        "createdAt": "2024-01-20T09:50:00Z",
+        "updatedAt": "2024-01-20T09:50:00Z"
+      }
+    ]
   },
   {
     "Id": 10,
@@ -87,6 +346,56 @@
     "email": "michelle.martinez@email.com",
     "status": "Interested",
     "dateAdded": "2024-01-08T16:30:00Z",
-    "lastContacted": "2024-01-21T12:10:00Z"
+    "lastContacted": "2024-01-21T12:10:00Z",
+    "contactHistory": [
+      {
+        "type": "email",
+        "action": "sent",
+        "date": "2024-01-21T12:10:00Z",
+        "description": "Sent starter kit information and enrollment forms",
+        "outcome": "positive"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-19T14:45:00Z",
+        "description": "Product consultation call. Interested in starting with basic package.",
+        "outcome": "positive"
+      },
+      {
+        "type": "meeting",
+        "action": "completed",
+        "date": "2024-01-15T18:00:00Z",
+        "description": "Coffee meeting to discuss business opportunity and products",
+        "outcome": "positive"
+      },
+      {
+        "type": "call",
+        "action": "completed",
+        "date": "2024-01-10T10:30:00Z",
+        "description": "Initial contact call following up on referral",
+        "outcome": "positive"
+      }
+    ],
+    "notes": [
+      {
+        "id": 1016,
+        "content": "Referred by existing team member. Already familiar with company and products. High conversion probability.",
+        "createdAt": "2024-01-10T10:35:00Z",
+        "updatedAt": "2024-01-10T10:35:00Z"
+      },
+      {
+        "id": 1017,
+        "content": "Ready to start with basic distributor package. Planning to focus on personal care products initially.",
+        "createdAt": "2024-01-19T14:50:00Z",
+        "updatedAt": "2024-01-19T14:50:00Z"
+      },
+      {
+        "id": 1018,
+        "content": "Enrollment forms sent. Expecting to close this week. Schedule onboarding call once signed up.",
+        "createdAt": "2024-01-21T12:15:00Z",
+        "updatedAt": "2024-01-21T12:15:00Z"
+      }
+    ]
   }
 ]

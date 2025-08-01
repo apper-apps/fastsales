@@ -10,12 +10,80 @@ class LeadsService {
     return [...this.leads];
   }
 
-  async getById(id) {
+async getById(id) {
     await new Promise(resolve => setTimeout(resolve, 200));
     const lead = this.leads.find(lead => lead.Id === parseInt(id));
     if (!lead) {
       throw new Error("Lead not found");
     }
+    return { 
+      ...lead,
+      contactHistory: lead.contactHistory || [],
+      notes: lead.notes || []
+    };
+  }
+
+  async addNote(leadId, noteData) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const leadIndex = this.leads.findIndex(lead => lead.Id === parseInt(leadId));
+    if (leadIndex === -1) {
+      throw new Error("Lead not found");
+    }
+
+    const newNote = {
+      id: Date.now(),
+      content: noteData.content,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    if (!this.leads[leadIndex].notes) {
+      this.leads[leadIndex].notes = [];
+    }
+    
+    this.leads[leadIndex].notes.unshift(newNote);
+    return { ...this.leads[leadIndex] };
+  }
+
+  async updateNote(leadId, noteId, noteData) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const leadIndex = this.leads.findIndex(lead => lead.Id === parseInt(leadId));
+    if (leadIndex === -1) {
+      throw new Error("Lead not found");
+    }
+
+    const lead = this.leads[leadIndex];
+    if (!lead.notes) {
+      throw new Error("Note not found");
+    }
+
+    const noteIndex = lead.notes.findIndex(note => note.id === noteId);
+    if (noteIndex === -1) {
+      throw new Error("Note not found");
+    }
+
+    lead.notes[noteIndex] = {
+      ...lead.notes[noteIndex],
+      content: noteData.content,
+      updatedAt: new Date().toISOString()
+    };
+
+    return { ...lead };
+  }
+
+  async deleteNote(leadId, noteId) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const leadIndex = this.leads.findIndex(lead => lead.Id === parseInt(leadId));
+    if (leadIndex === -1) {
+      throw new Error("Lead not found");
+    }
+
+    const lead = this.leads[leadIndex];
+    if (!lead.notes) {
+      throw new Error("Note not found");
+    }
+
+    lead.notes = lead.notes.filter(note => note.id !== noteId);
     return { ...lead };
   }
 

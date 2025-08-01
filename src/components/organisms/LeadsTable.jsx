@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import Button from "@/components/atoms/Button";
-import StatusBadge from "@/components/molecules/StatusBadge";
 import ApperIcon from "@/components/ApperIcon";
+import StatusBadge from "@/components/molecules/StatusBadge";
+import Button from "@/components/atoms/Button";
 
-const LeadsTable = ({ leads, onUpdateStatus, onDeleteLead }) => {
+const LeadsTable = ({ leads, onUpdateStatus, onDeleteLead, onViewLead }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   const handleSort = (key) => {
@@ -72,9 +72,10 @@ const LeadsTable = ({ leads, onUpdateStatus, onDeleteLead }) => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {sortedLeads.map((lead) => (
-              <tr
+<tr
                 key={lead.Id}
-                className="hover:bg-gray-50/50 transition-all duration-200"
+                className="hover:bg-gray-50/50 transition-all duration-200 cursor-pointer"
+                onClick={() => onViewLead?.(lead)}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="font-medium text-gray-900">{lead.name}</div>
