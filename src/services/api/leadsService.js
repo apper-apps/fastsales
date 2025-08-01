@@ -1,12 +1,21 @@
 import leadsData from "@/services/mockData/leads.json";
 class LeadsService {
-  constructor() {
+constructor() {
     this.leads = [...leadsData];
+    // Calculate initial AI scores for all leads
+    this.leads = this.leads.map(lead => ({
+      ...lead,
+      aiScore: this.calculateAIScore(lead)
+    }));
   }
-
-  async getAll() {
+async getAll() {
     await new Promise(resolve => setTimeout(resolve, 200));
-    return [...this.leads];
+    // Ensure all leads have updated AI scores
+    const leadsWithScores = this.leads.map(lead => ({
+      ...lead,
+      aiScore: this.calculateAIScore(lead)
+    }));
+    return [...leadsWithScores];
   }
 
 async getById(id) {
@@ -86,7 +95,7 @@ async getById(id) {
     return { ...lead };
   }
 
-  async create(leadData) {
+async create(leadData) {
     await new Promise(resolve => setTimeout(resolve, 300));
     const maxId = Math.max(...this.leads.map(lead => lead.Id), 0);
     const newLead = {
@@ -95,11 +104,12 @@ async getById(id) {
       dateAdded: new Date().toISOString(),
       lastContacted: new Date().toISOString()
     };
+    newLead.aiScore = this.calculateAIScore(newLead);
     this.leads.unshift(newLead);
     return { ...newLead };
   }
 
-  async update(id, updateData) {
+async update(id, updateData) {
     await new Promise(resolve => setTimeout(resolve, 300));
     const index = this.leads.findIndex(lead => lead.Id === parseInt(id));
     if (index === -1) {
@@ -110,6 +120,7 @@ async getById(id) {
       ...updateData,
       lastContacted: new Date().toISOString()
     };
+    this.leads[index].aiScore = this.calculateAIScore(this.leads[index]);
     return { ...this.leads[index] };
   }
 
@@ -122,9 +133,98 @@ async getById(id) {
     this.leads.splice(index, 1);
 return true;
   }
-
+calculateAIScore(lead) {
+    if (!lead) return 0;
+    
+    let score = 0;
+    const now = new Date();
+    const dateAdded = new Date(lead.dateAdded);
+    const daysSinceAdded = Math.max(1, (now - dateAdded) / (1000 * 60 * 60 * 24));
+    
+    // Base score from lead status (0-30 points)
+    const statusScores = {
+      "New Leads": 10,
+      "Initial Contact": 15,
+      "Presentation Scheduled": 25,
+      "Presented": 30,
+      "Follow-up": 20,
+      "Closed Won": 50,
+      "Closed Lost": 5
+    };
+    score += statusScores[lead.status] || 10;
+    
+    // Contact history analysis (0-40 points)
+    if (lead.contactHistory && lead.contactHistory.length > 0) {
+      const interactions = lead.contactHistory;
+      const positiveInteractions = interactions.filter(i => i.outcome === "positive").length;
+      const totalInteractions = interactions.length;
+      
+      // Interaction frequency bonus (0-15 points)
+      const interactionFrequency = Math.min(15, totalInteractions * 2);
+      score += interactionFrequency;
+      
+      // Positive outcome ratio (0-20 points)
+      const positiveRatio = totalInteractions > 0 ? positiveInteractions / totalInteractions : 0;
+      score += Math.round(positiveRatio * 20);
+      
+      // Recent activity bonus (0-10 points)
+      const lastContact = new Date(lead.lastContacted);
+      const daysSinceContact = (now - lastContact) / (1000 * 60 * 60 * 24);
+      if (daysSinceContact <= 3) score += 10;
+      else if (daysSinceContact <= 7) score += 7;
+      else if (daysSinceContact <= 14) score += 4;
+      
+      // Response time analysis (0-15 points)
+      let responseTimeScore = 0;
+      for (let i = 1; i < interactions.length; i++) {
+        const current = new Date(interactions[i-1].date);
+        const previous = new Date(interactions[i].date);
+        const responseHours = (current - previous) / (1000 * 60 * 60);
+        
+        if (responseHours <= 24) responseTimeScore += 3;
+        else if (responseHours <= 72) responseTimeScore += 2;
+        else if (responseHours <= 168) responseTimeScore += 1;
+      }
+      score += Math.min(15, responseTimeScore);
+    }
+    
+    // Engagement quality bonuses (0-20 points)
+    if (lead.contactHistory) {
+      const hasCall = lead.contactHistory.some(h => h.type === "call" && h.action === "completed");
+      const hasMeeting = lead.contactHistory.some(h => h.type === "meeting");
+      const hasPresentation = lead.contactHistory.some(h => h.type === "presentation");
+      const hasEnrollment = lead.contactHistory.some(h => h.type === "enrollment");
+      
+      if (hasCall) score += 5;
+      if (hasMeeting) score += 8;
+      if (hasPresentation) score += 10;
+      if (hasEnrollment) score += 15;
+    }
+    
+    // Pipeline velocity bonus (0-10 points)
+    const stageProgression = ["New Leads", "Initial Contact", "Presentation Scheduled", "Presented", "Follow-up"];
+    const currentStageIndex = stageProgression.indexOf(lead.status);
+    if (currentStageIndex > 0 && daysSinceAdded > 0) {
+      const velocityScore = Math.min(10, (currentStageIndex / daysSinceAdded) * 30);
+      score += velocityScore;
+    }
+    
+    // Notes engagement bonus (0-5 points)
+    if (lead.notes && lead.notes.length > 0) {
+      score += Math.min(5, lead.notes.length);
+    }
+    
+    // Cap the score and add randomization for realism
+    score = Math.min(100, Math.max(1, Math.round(score)));
+    
+    // Add slight randomization to make scores feel more realistic
+    const randomAdjustment = Math.floor(Math.random() * 6) - 3; // -3 to +3
+    score = Math.min(100, Math.max(1, score + randomAdjustment));
+    
+    return score;
+  }
   async updateStage(id, newStatus) {
-    await new Promise(resolve => setTimeout(resolve, 300));
+await new Promise(resolve => setTimeout(resolve, 300));
     const index = this.leads.findIndex(lead => lead.Id === parseInt(id));
     if (index === -1) {
       throw new Error("Lead not found");
@@ -150,6 +250,9 @@ return true;
       this.leads[index].contactHistory = [];
     }
     this.leads[index].contactHistory.unshift(transitionRecord);
+    
+    // Recalculate AI score after status change
+    this.leads[index].aiScore = this.calculateAIScore(this.leads[index]);
 
     return { ...this.leads[index] };
   }
@@ -206,8 +309,11 @@ async addActivity(leadId, activityData) {
       }
     }
 
-    // Sort contact history by date (newest first)
+// Sort contact history by date (newest first)
     lead.contactHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // Recalculate AI score after activity addition
+    this.leads[leadIndex].aiScore = this.calculateAIScore(this.leads[leadIndex]);
 
     return { ...this.leads[leadIndex] };
   }

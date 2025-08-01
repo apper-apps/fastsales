@@ -3,51 +3,65 @@ import { format } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import Button from "@/components/atoms/Button";
+import Badge from "@/components/atoms/Badge";
 
 const LeadsTable = ({ leads, onUpdateStatus, onDeleteLead, onViewLead }) => {
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [sortField, setSortField] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
 
-  const handleSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
     }
-    setSortConfig({ key, direction });
   };
-
-  const sortedLeads = React.useMemo(() => {
-    let sortableLeads = [...leads];
-    if (sortConfig.key) {
-      sortableLeads.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableLeads;
-  }, [leads, sortConfig]);
 
   const getSortIcon = (columnName) => {
-    if (sortConfig.key === columnName) {
-      return sortConfig.direction === "asc" ? "ChevronUp" : "ChevronDown";
-    }
-    return "ChevronsUpDown";
+    if (sortField !== columnName) return "ArrowUpDown";
+    return sortDirection === "asc" ? "ArrowUp" : "ArrowDown";
   };
 
+  const sortableLeads = [...leads];
+  if (sortField) {
+    sortableLeads.sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      if (sortField === "dateAdded" || sortField === "lastContacted") {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      }
+
+      if (sortField === "aiScore") {
+        aValue = aValue || 0;
+        bValue = bValue || 0;
+      }
+
+      if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      const direction = sortDirection === "asc" ? 1 : -1;
+      if (aValue < bValue) return -1 * direction;
+      if (aValue > bValue) return 1 * direction;
+      return 0;
+    });
+  }
+
   return (
-    <div className="bg-white/70 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+    <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50/80">
+          <thead className="bg-gray-50">
             <tr>
               {[
                 { key: "name", label: "Name" },
                 { key: "phone", label: "Phone" },
                 { key: "email", label: "Email" },
+                { key: "aiScore", label: "AI Score" },
                 { key: "status", label: "Status" },
                 { key: "dateAdded", label: "Date Added" },
               ].map((column) => (
@@ -65,26 +79,54 @@ const LeadsTable = ({ leads, onUpdateStatus, onDeleteLead, onViewLead }) => {
                   </div>
                 </th>
               ))}
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+              <th className="relative px-6 py-3">
+                <span className="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {sortedLeads.map((lead) => (
-<tr
+          <tbody className="bg-white divide-y divide-gray-200">
+            {sortableLeads.map((lead) => (
+              <tr
                 key={lead.Id}
-                className="hover:bg-gray-50/50 transition-all duration-200 cursor-pointer"
+                className={`hover:bg-gray-50/50 transition-all duration-200 cursor-pointer ${
+                  lead.aiScore >= 80 ? 'bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-400' : ''
+                }`}
                 onClick={() => onViewLead?.(lead)}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-medium text-gray-900">{lead.name}</div>
+                  <div className="flex items-center space-x-2">
+                    <div className="font-medium text-gray-900">{lead.name}</div>
+                    {lead.aiScore >= 80 && (
+                      <ApperIcon 
+                        name="Flame" 
+                        className="h-4 w-4 text-orange-500 animate-pulse" 
+                        title="High Priority Lead"
+                      />
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-600">
                   {lead.phone}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-600">
                   {lead.email}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center space-x-2">
+                    <Badge 
+                      variant={
+                        lead.aiScore >= 90 ? "excellent" :
+                        lead.aiScore >= 70 ? "high" :
+                        lead.aiScore >= 40 ? "medium" : "low"
+                      }
+                      className="font-semibold"
+                    >
+                      {lead.aiScore || 0}
+                    </Badge>
+                    {lead.aiScore >= 80 && (
+                      <span className="text-xs text-orange-600 font-medium">HOT</span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <StatusBadge status={lead.status} />

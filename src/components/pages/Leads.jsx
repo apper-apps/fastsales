@@ -24,8 +24,10 @@ const [leads, setLeads] = useState([]);
       setLoading(true);
       setError("");
       await new Promise(resolve => setTimeout(resolve, 300));
-      const data = await leadsService.getAll();
-      setLeads(data);
+const data = await leadsService.getAll();
+      // Sort by AI score initially to show high-priority leads first
+      const sortedData = data.sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
+      setLeads(sortedData);
     } catch (err) {
       setError("Failed to load leads. Please try again.");
     } finally {
@@ -39,9 +41,9 @@ const [leads, setLeads] = useState([]);
 
 const handleAddLead = async (leadData) => {
     try {
-      const newLead = await leadsService.create(leadData);
-      setLeads(prev => [newLead, ...prev]);
-      toast.success("Lead added successfully!");
+const newLead = await leadsService.create(leadData);
+      setLeads(prev => [newLead, ...prev].sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)));
+      toast.success(`Lead added successfully! AI Score: ${newLead.aiScore || 0}`);
     } catch (err) {
       toast.error("Failed to add lead. Please try again.");
     }
@@ -49,11 +51,11 @@ const handleAddLead = async (leadData) => {
 
   const handleUpdateStatus = async (leadId, newStatus) => {
     try {
-      const updatedLead = await leadsService.update(leadId, { status: newStatus });
+const updatedLead = await leadsService.update(leadId, { status: newStatus });
       setLeads(prev => prev.map(lead => 
         lead.Id === leadId ? updatedLead : lead
-      ));
-      toast.success("Lead status updated!");
+      ).sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)));
+      toast.success(`Lead status updated! New AI Score: ${updatedLead.aiScore || 0}`);
     } catch (err) {
       toast.error("Failed to update lead status.");
     }
@@ -89,17 +91,18 @@ const handleAddLead = async (leadData) => {
 const handleLeadUpdate = (updatedLead) => {
     setLeads(prev => prev.map(lead => 
       lead.Id === updatedLead.Id ? updatedLead : lead
-    ));
+    ).sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)));
     setSelectedLead(updatedLead);
   };
 
   const handleActivityAdd = async (leadId, activityData) => {
     try {
-      const updatedLead = await leadsService.addActivity(leadId, activityData);
+const updatedLead = await leadsService.addActivity(leadId, activityData);
       setLeads(prev => prev.map(lead => 
         lead.Id === leadId ? updatedLead : lead
-      ));
+      ).sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)));
       setSelectedLead(updatedLead);
+      toast.success(`Activity logged! AI Score updated to: ${updatedLead.aiScore || 0}`);
       return updatedLead;
     } catch (error) {
       toast.error("Failed to log activity. Please try again.");
