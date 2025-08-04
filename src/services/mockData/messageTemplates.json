@@ -1,0 +1,110 @@
+[
+  {
+    "Id": 1,
+    "name": "Warm Introduction",
+    "category": "Initial Contact",
+    "content": "Hi [Name]! I hope you're doing well. I came across your profile and was impressed by your background in [Industry/Interest]. I'm working with a company that's expanding in your area and thought you might be interested in learning about some exciting opportunities. Would you be open to a brief conversation this week?",
+    "tags": ["introduction", "warm", "professional"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "Id": 2,
+    "name": "Referral Introduction",
+    "category": "Initial Contact", 
+    "content": "Hi [Name], [Referrer Name] suggested I reach out to you! They mentioned you might be interested in learning about some business opportunities in the [Industry] space. I'd love to share what we're doing and see if it might be a good fit. Are you free for a quick call this week?",
+    "tags": ["referral", "introduction", "warm"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T10:15:00Z"
+  },
+  {
+    "Id": 3,
+    "name": "Social Media Connect",
+    "category": "Initial Contact",
+    "content": "Hey [Name]! I loved your recent post about [Topic]. It really resonated with me because [Personal Connection]. I'm actually working on something that aligns with your interests and would love to connect. Mind if I send you a quick message about it?",
+    "tags": ["social media", "personal", "connection"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  {
+    "Id": 4,
+    "name": "Business Opportunity Invitation",
+    "category": "Invitations",
+    "content": "Hi [Name], I wanted to personally invite you to an exclusive business presentation happening [Date] at [Time]. We'll be sharing some incredible opportunities in the [Industry] space that could be perfect for someone with your background. Space is limited - would you like me to reserve a seat for you?",
+    "tags": ["invitation", "presentation", "exclusive"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T11:00:00Z"
+  },
+  {
+    "Id": 5,
+    "name": "Product Launch Event",
+    "category": "Invitations",
+    "content": "Exciting news, [Name]! We're launching our newest [Product/Service] line and I'd love for you to be among the first to experience it. Join us for an exclusive preview event on [Date] where you'll get to try everything first-hand and learn about some amazing partnership opportunities. Can I count you in?",
+    "tags": ["product launch", "exclusive", "preview"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T11:15:00Z"
+  },
+  {
+    "Id": 6,
+    "name": "Training Workshop Invite",
+    "category": "Invitations",
+    "content": "Hi [Name]! I'm hosting a free training workshop on [Topic] this [Day] and immediately thought of you. Given your interest in [Relevant Interest], I think you'd find tremendous value in what we'll be covering. Plus, there will be networking opportunities with other like-minded professionals. Would you like me to save you a spot?",
+    "tags": ["training", "workshop", "education"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T11:30:00Z"
+  },
+  {
+    "Id": 7,
+    "name": "Gentle Follow-up",
+    "category": "Follow-ups",
+    "content": "Hi [Name], I wanted to follow up on our conversation from [Date] about [Topic]. I know you mentioned you needed some time to think it over, and I completely understand. I'm here whenever you're ready to discuss next steps or if you have any questions. No pressure at all - just wanted you to know I'm thinking of you!",
+    "tags": ["gentle", "no pressure", "thoughtful"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T12:00:00Z"
+  },
+  {
+    "Id": 8,
+    "name": "Value-Add Follow-up",
+    "category": "Follow-ups",
+    "content": "Hey [Name]! I was just thinking about our chat regarding [Topic] and remembered this article/resource that I think you'd find valuable: [Link/Resource]. Even if you decide this opportunity isn't right for you, I thought you might enjoy this. Hope you're having a great week!",
+    "tags": ["value-add", "resource", "helpful"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T12:15:00Z"
+  },
+  {
+    "Id": 9,
+    "name": "Time Objection Response",
+    "category": "Objection Handling",
+    "content": "I completely understand, [Name]. Time is definitely our most valuable resource! That's actually one of the reasons I'm so excited about this opportunity - it's designed for busy people like yourself. Most of our successful partners started with just 5-10 hours per week. Would it be helpful if I showed you exactly how others in similar situations have made it work?",
+    "tags": ["time objection", "understanding", "solution"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T13:00:00Z"
+  },
+  {
+    "Id": 10,
+    "name": "Money Objection Response", 
+    "category": "Objection Handling",
+    "content": "I hear you, [Name], and I appreciate your honesty about the investment. Here's what I've learned - the people who are most concerned about the cost are often the ones who understand the value of money best. That's exactly the mindset that makes people successful in this business. What if I could show you how others have started with minimal investment and grown from there?",
+    "tags": ["money objection", "investment", "value"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T13:15:00Z"
+  },
+  {
+    "Id": 11,
+    "name": "Skepticism Response",
+    "category": "Objection Handling", 
+    "content": "You know what, [Name]? I love that you're asking tough questions - it shows you're a critical thinker, which is exactly what we need more of. I was skeptical too when I first heard about this. What changed my mind was seeing real results from real people. Would you be open to speaking with someone who was in your exact position a year ago?",
+    "tags": ["skepticism", "validation", "proof"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T13:30:00Z"
+  },
+  {
+    "Id": 12,
+    "name": "Not Right Time Response",
+    "category": "Objection Handling",
+    "content": "I totally get that, [Name]. Timing is everything, isn't it? Here's what I've noticed though - there's rarely a 'perfect' time for anything good in life. The question is: will the timing be any better in 6 months or a year? Sometimes the best time to plant a tree was 20 years ago, but the second best time is today. What would need to change for the timing to feel right to you?",
+    "tags": ["timing", "perspective", "future"],
+    "isDefault": true,
+    "createdAt": "2024-01-15T13:45:00Z"
+  }
+]

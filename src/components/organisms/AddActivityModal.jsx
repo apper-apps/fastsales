@@ -1,22 +1,24 @@
 import React, { useState } from "react";
-import Button from "@/components/atoms/Button";
-import { Card } from "@/components/atoms/Card";
-import Input from "@/components/atoms/Input";
-import Label from "@/components/atoms/Label";
-import Select from "@/components/atoms/Select";
-import FormField from "@/components/molecules/FormField";
-import ApperIcon from "@/components/ApperIcon";
+import MessageTemplatesModal from "@/components/organisms/MessageTemplatesModal";
 import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+import Label from "@/components/atoms/Label";
+import { Card } from "@/components/atoms/Card";
 
 const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
   const [activityData, setActivityData] = useState({
     type: "call",
-    action: "completed",
+    action: "completed", 
     outcome: "neutral",
     description: "",
     date: new Date().toISOString().slice(0, 16)
   });
   const [loading, setLoading] = useState(false);
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
 
   const activityTypes = [
     { value: "call", label: "Phone Call", icon: "Phone" },
@@ -44,7 +46,22 @@ const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
     { value: "negative", label: "Negative - Lost Interest" }
   ];
 
-  const handleSubmit = async (e) => {
+const handleTemplateSelect = (template) => {
+    // Personalize template content with lead's name
+    let personalizedContent = template.content;
+    if (lead?.name) {
+      personalizedContent = personalizedContent.replace(/\[Name\]/g, lead.name);
+    }
+    
+    setActivityData(prev => ({
+      ...prev,
+      description: personalizedContent
+    }));
+    
+    setShowTemplatesModal(false);
+    toast.success(`Template "${template.name}" applied`);
+  };
+const handleSubmit = async (e) => {
     e.preventDefault();
     if (!activityData.description.trim()) {
       toast.error("Please add a description for this activity");
@@ -143,8 +160,20 @@ const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
               required
             />
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description & Notes</Label>
+<div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="description">Description & Notes</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTemplatesModal(true)}
+                  className="flex items-center gap-2 text-primary-600 hover:text-primary-700"
+                >
+                  <ApperIcon name="MessageSquare" size={16} />
+                  Use Template
+                </Button>
+              </div>
               <textarea
                 id="description"
                 value={activityData.description}
@@ -153,9 +182,14 @@ const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
                 className="w-full min-h-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-y"
                 required
               />
+              {activityData.description && (
+                <p className="text-xs text-gray-500">
+                  {activityData.description.length} characters
+                </p>
+              )}
             </div>
 
-            {activityData.outcome === "positive" && (
+{activityData.outcome === "positive" && (
               <div className="bg-green-50 border border-green-200 rounded-md p-3">
                 <div className="flex items-center">
                   <ApperIcon name="TrendingUp" size={16} className="text-green-600 mr-2" />
@@ -207,7 +241,13 @@ const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
             </div>
           </form>
         </div>
-      </Card>
+</Card>
+
+      <MessageTemplatesModal
+        isOpen={showTemplatesModal}
+        onClose={() => setShowTemplatesModal(false)}
+        onSelectTemplate={handleTemplateSelect}
+      />
     </div>
   );
 };
