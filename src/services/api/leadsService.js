@@ -327,7 +327,7 @@ async addAppointment(leadId, appointmentData) {
       id: Date.now(),
       ...appointmentData,
       createdAt: new Date().toISOString()
-    };
+};
 
     lead.appointments.push(appointment);
     const updatedLead = await this.update(leadId, { appointments: lead.appointments });
@@ -335,4 +335,6 @@ async addAppointment(leadId, appointmentData) {
   }
 }
 
+const leadsService = new LeadsService();
+export default leadsService;
 export default new LeadsService();

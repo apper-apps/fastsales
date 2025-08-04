@@ -1,25 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import leadsService from "@/services/api/leadsService";
+import reminderService from "@/services/reminderService";
+import ApperIcon from "@/components/ApperIcon";
 import MetricCard from "@/components/molecules/MetricCard";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
-import leadsService from "@/services/api/leadsService";
+import Pipeline from "@/components/pages/Pipeline";
+import Button from "@/components/atoms/Button";
+import ReminderCard from "@/components/molecules/ReminderCard";
 
 const Dashboard = () => {
-  const [leads, setLeads] = useState([]);
+const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const loadLeads = async () => {
+  const [reminders, setReminders] = useState([]);
+const loadLeads = async () => {
     try {
       setLoading(true);
       setError("");
       await new Promise(resolve => setTimeout(resolve, 300));
       const data = await leadsService.getAll();
       setLeads(data);
+      
+      // Calculate reminders based on lead data
+      const calculatedReminders = reminderService.calculateFollowUpReminders(data);
+      setReminders(calculatedReminders);
     } catch (err) {
       setError("Failed to load dashboard data. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReminderAction = async (action, leadId) => {
+    // Refresh reminders after any action
+    if (action === 'complete' || action === 'snooze') {
+      const updatedReminders = reminders.filter(r => r.Id !== leadId);
+      setReminders(updatedReminders);
     }
   };
 
@@ -72,12 +89,50 @@ const Dashboard = () => {
         />
         <MetricCard
           title="New Leads"
-          value={metrics.newLeads}
+value={metrics.newLeads}
           icon="UserPlus"
           trend="up"
           trendValue="+5 this week"
         />
       </div>
+
+      {/* Follow-up Reminders Section */}
+      {reminders.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <ApperIcon name="Bell" size={20} className="text-red-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-display font-bold text-gray-900">
+                Follow-up Reminders
+              </h2>
+              <p className="text-sm text-gray-600">
+                {reminders.length} leads need your attention
+              </p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {reminders.slice(0, 6).map((reminder) => (
+              <ReminderCard
+                key={reminder.Id}
+                reminder={reminder}
+                onAction={handleReminderAction}
+              />
+            ))}
+          </div>
+          
+          {reminders.length > 6 && (
+            <div className="mt-4 text-center">
+              <Button variant="outline" size="sm">
+                <ApperIcon name="MoreHorizontal" size={16} className="mr-2" />
+                View {reminders.length - 6} more reminders
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-gray-100">
