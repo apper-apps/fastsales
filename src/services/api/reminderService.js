@@ -113,7 +113,28 @@ class ReminderService {
     return 'medium';
   }
 
-  getSuggestedAction(lead, daysOverdue) {
+getSuggestedAction(lead, daysOverdue) {
+    // Check for recent objections in activities to provide more targeted follow-up
+    const recentObjection = this.getLastObjection(lead);
+    
+    if (recentObjection) {
+      const objectionActions = {
+        price: 'Send ROI calculator and value proposition materials',
+        time: 'Check in on timing - circumstances may have changed',
+        skepticism: 'Share additional case studies and success stories',
+        need: 'Provide industry insights about emerging challenges',
+        authority: 'Schedule group presentation with decision makers',
+        trust: 'Send testimonials and offer reference calls',
+        competition: 'Present competitive advantage analysis',
+        timing: 'Follow up on timing constraints and offer flexible options'
+      };
+      
+      if (objectionActions[recentObjection.type]) {
+        return objectionActions[recentObjection.type];
+      }
+    }
+
+    // Default status-based actions
     if (lead.status === 'New Leads') {
       return daysOverdue > 2 ? 'Call immediately' : 'Make initial contact';
     }
@@ -136,6 +157,17 @@ class ReminderService {
       return 'Re-engagement attempt';
     }
     return 'Follow up with lead';
+  }
+
+  getLastObjection(lead) {
+    if (!lead.activities || lead.activities.length === 0) return null;
+    
+    // Find the most recent activity with an objection
+    const activitiesWithObjections = lead.activities
+      .filter(activity => activity.objection && activity.objection.type)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    return activitiesWithObjections.length > 0 ? activitiesWithObjections[0].objection : null;
   }
 
   getTimingMessage(daysOverdue, expectedDays) {

@@ -10,16 +10,21 @@ import Label from "@/components/atoms/Label";
 import { Card } from "@/components/atoms/Card";
 
 const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
-  const [activityData, setActivityData] = useState({
+const [activityData, setActivityData] = useState({
     type: "call",
     action: "completed", 
     outcome: "neutral",
     description: "",
-    date: new Date().toISOString().slice(0, 16)
+    date: new Date().toISOString().slice(0, 16),
+    objection: {
+      type: "",
+      description: "",
+      aiResponse: "",
+      followUpStrategy: ""
+    }
   });
   const [loading, setLoading] = useState(false);
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
-
   const activityTypes = [
     { value: "call", label: "Phone Call", icon: "Phone" },
     { value: "email", label: "Email", icon: "Mail" },
@@ -45,7 +50,71 @@ const AddActivityModal = ({ isOpen, onClose, lead, onActivityAdd }) => {
     { value: "neutral", label: "Neutral - No Change" },
     { value: "negative", label: "Negative - Lost Interest" }
   ];
+const objectionTypes = [
+    { value: "", label: "No objection encountered" },
+    { value: "price", label: "Price/Cost Concerns", icon: "DollarSign" },
+    { value: "time", label: "Not the Right Time", icon: "Clock" },
+    { value: "skepticism", label: "Product Skepticism", icon: "AlertCircle" },
+    { value: "need", label: "Don't See the Need", icon: "HelpCircle" },
+    { value: "authority", label: "Need to Consult Others", icon: "Users" },
+    { value: "trust", label: "Trust/Credibility Issues", icon: "Shield" },
+    { value: "competition", label: "Comparing Competitors", icon: "Target" },
+    { value: "timing", label: "Bad Timing", icon: "Calendar" }
+  ];
 
+  const generateAIResponse = (objectionType, leadInfo, outcome) => {
+    if (!objectionType) return { response: "", strategy: "" };
+
+    const responses = {
+      price: {
+        response: `I understand cost is a concern. Let me help you see the value: Our solution typically pays for itself within 3-6 months through [specific benefit relevant to ${leadInfo?.company || 'your business'}]. Many clients initially had the same concern, but found the ROI exceeded their expectations.`,
+        strategy: `Follow up with ROI calculator, case studies from similar businesses, and consider offering payment plan options. Schedule value demonstration call.`
+      },
+      time: {
+        response: `I appreciate your honesty about timing. Many successful clients felt the same way initially. The question is: will the timing ever be perfect, or could waiting actually cost you more? Let's explore what 'right time' looks like for you.`,
+        strategy: `Uncover the real reasons behind timing concerns. Schedule check-in call in 2-4 weeks. Send valuable content to stay top-of-mind.`
+      },
+      skepticism: {
+        response: `Healthy skepticism shows you're a thoughtful decision-maker. I'd be skeptical too! That's exactly why we offer [guarantee/trial/proof]. Let me share some results from clients who had similar concerns initially.`,
+        strategy: `Provide social proof, testimonials, and risk-free trial options. Offer product demonstration or reference calls with existing clients.`
+      },
+      need: {
+        response: `That's fair - if you don't see the need, this isn't right for you. Help me understand: what would need to change in your situation for this to become valuable? Sometimes the need isn't obvious until we look deeper.`,
+        strategy: `Ask discovery questions to uncover hidden pain points. Share industry insights about emerging challenges they may not be aware of.`
+      },
+      authority: {
+        response: `Absolutely - this is an important decision that affects everyone. Who else would be involved in this decision? I'd be happy to present to the whole team or provide materials that make it easy for you to share internally.`,
+        strategy: `Identify all decision makers and influencers. Offer group presentation or provide decision-maker packet. Map out internal buying process.`
+      },
+      trust: {
+        response: `Trust is earned, not given, and I respect that. What would help you feel more confident about moving forward? I'm happy to provide references, credentials, or whatever information would be most helpful.`,
+        strategy: `Provide testimonials, certifications, company background. Offer reference calls with similar clients. Consider starting with smaller commitment.`
+      },
+      competition: {
+        response: `Smart move comparing options - this is a big decision. I'm confident we'll compare favorably, but more importantly, let's make sure you're comparing the right things. What criteria matter most to you?`,
+        strategy: `Create comparison matrix highlighting unique advantages. Focus on value proposition and outcomes rather than features. Schedule competitive analysis call.`
+      },
+      timing: {
+        response: `I understand timing is everything. Help me understand what's driving the timing concern - is it budget cycles, other priorities, or something else? Maybe we can find a way to align with your timeline.`,
+        strategy: `Identify specific timing constraints and work around them. Consider phased implementation or pilot programs. Stay in touch with regular value-add communications.`
+      }
+    };
+
+    return responses[objectionType] || { response: "", strategy: "" };
+  };
+
+  const handleObjectionChange = (objectionType) => {
+    const aiResponse = generateAIResponse(objectionType, lead, activityData.outcome);
+    setActivityData(prev => ({
+      ...prev,
+      objection: {
+        type: objectionType,
+        description: prev.objection.description,
+        aiResponse: aiResponse.response,
+        followUpStrategy: aiResponse.strategy
+      }
+    }));
+  };
 const handleTemplateSelect = (template) => {
     // Personalize template content with lead's name
     let personalizedContent = template.content;
@@ -73,7 +142,13 @@ const handleSubmit = async (e) => {
       const activityToAdd = {
         ...activityData,
         date: new Date(activityData.date).toISOString(),
-        description: activityData.description.trim()
+        description: activityData.description.trim(),
+        objection: activityData.objection.type ? {
+          type: activityData.objection.type,
+          description: activityData.objection.description.trim(),
+          aiResponse: activityData.objection.aiResponse,
+          followUpStrategy: activityData.objection.followUpStrategy
+        } : null
       };
 
       await onActivityAdd(lead.Id, activityToAdd);
@@ -84,7 +159,13 @@ const handleSubmit = async (e) => {
         action: "completed",
         outcome: "neutral",
         description: "",
-        date: new Date().toISOString().slice(0, 16)
+        date: new Date().toISOString().slice(0, 16),
+        objection: {
+          type: "",
+          description: "",
+          aiResponse: "",
+          followUpStrategy: ""
+        }
       });
       
       onClose();
@@ -152,13 +233,71 @@ const handleSubmit = async (e) => {
             />
 
             <FormField
-              label="Outcome"
+label="Outcome"
               type="select"
               value={activityData.outcome}
               onChange={(e) => setActivityData(prev => ({ ...prev, outcome: e.target.value }))}
               options={outcomeTypes}
               required
             />
+
+            {/* Objection Tracking Section */}
+            <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+              <div className="flex items-center gap-2">
+                <ApperIcon name="AlertTriangle" size={20} className="text-orange-600" />
+                <h3 className="font-medium text-orange-900">Objection Tracking</h3>
+              </div>
+              
+              <FormField
+                label="Did the prospect raise any objections?"
+                type="select"
+                value={activityData.objection.type}
+                onChange={(e) => handleObjectionChange(e.target.value)}
+                options={objectionTypes}
+              />
+
+              {activityData.objection.type && (
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="objection-description">Objection Details</Label>
+                    <textarea
+                      id="objection-description"
+                      value={activityData.objection.description}
+                      onChange={(e) => setActivityData(prev => ({
+                        ...prev,
+                        objection: { ...prev.objection, description: e.target.value }
+                      }))}
+                      placeholder="Describe the specific objection raised..."
+                      className="w-full min-h-20 px-3 py-2 border border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+                    />
+                  </div>
+
+                  {activityData.objection.aiResponse && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <ApperIcon name="Bot" size={16} className="text-blue-600" />
+                          <span className="text-sm font-medium text-blue-900">AI-Suggested Response</span>
+                        </div>
+                        <p className="text-sm text-blue-800 leading-relaxed">
+                          {activityData.objection.aiResponse}
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <ApperIcon name="Target" size={16} className="text-green-600" />
+                          <span className="text-sm font-medium text-green-900">Follow-up Strategy</span>
+                        </div>
+                        <p className="text-sm text-green-800 leading-relaxed">
+                          {activityData.objection.followUpStrategy}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
 <div className="space-y-2">
               <div className="flex items-center justify-between">
