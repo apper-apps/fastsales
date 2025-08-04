@@ -334,7 +334,5 @@ async addAppointment(leadId, appointmentData) {
     return updatedLead;
   }
 }
-
 const leadsService = new LeadsService();
 export default leadsService;
-export default new LeadsService();
