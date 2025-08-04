@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import leadsService from "@/services/api/leadsService";
-import reminderService from "@/services/reminderService";
-import ApperIcon from "@/components/ApperIcon";
-import MetricCard from "@/components/molecules/MetricCard";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Pipeline from "@/components/pages/Pipeline";
-import Button from "@/components/atoms/Button";
-import ReminderCard from "@/components/molecules/ReminderCard";
+import React, { useEffect, useState } from 'react'
+import leadsService from '@/services/api/leadsService'
+import reminderService from '@/services/api/reminderService'
+import ApperIcon from '@/components/ApperIcon'
+import MetricCard from '@/components/molecules/MetricCard'
+import Loading from '@/components/ui/Loading'
+import Error from '@/components/ui/Error'
+import Pipeline from '@/components/pages/Pipeline'
+import Button from '@/components/atoms/Button'
+import ReminderCard from '@/components/molecules/ReminderCard'
 
 const Dashboard = () => {
 const [leads, setLeads] = useState([]);
