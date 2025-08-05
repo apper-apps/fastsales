@@ -109,6 +109,38 @@ async create(leadData) {
     return { ...newLead };
   }
 
+  async createBulk(leadsData) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const existingEmails = new Set(this.leads.map(lead => lead.email.toLowerCase()));
+    const createdLeads = [];
+    let currentMaxId = Math.max(...this.leads.map(lead => lead.Id), 0);
+    
+    for (const leadData of leadsData) {
+      // Skip duplicates if email already exists
+      if (existingEmails.has(leadData.email.toLowerCase())) {
+        continue;
+      }
+      
+      currentMaxId += 1;
+      const newLead = {
+        Id: currentMaxId,
+        ...leadData,
+        dateAdded: new Date().toISOString(),
+        lastContacted: new Date().toISOString(),
+        contactHistory: [],
+        notes: leadData.notes || '',
+        source: leadData.source || 'CSV Import'
+      };
+      
+      newLead.aiScore = this.calculateAIScore(newLead);
+      this.leads.unshift(newLead);
+      createdLeads.push({ ...newLead });
+      existingEmails.add(leadData.email.toLowerCase());
+    }
+    
+    return createdLeads;
+  }
+
 async update(id, updateData) {
     await new Promise(resolve => setTimeout(resolve, 300));
     const index = this.leads.findIndex(lead => lead.Id === parseInt(id));

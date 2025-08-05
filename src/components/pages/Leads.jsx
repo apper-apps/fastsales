@@ -4,6 +4,7 @@ import SearchBar from "@/components/molecules/SearchBar";
 import LeadsTable from "@/components/organisms/LeadsTable";
 import AddLeadModal from "@/components/organisms/AddLeadModal";
 import LeadDetailModal from "@/components/organisms/LeadDetailModal";
+import CSVImportModal from "@/components/organisms/CSVImportModal";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
@@ -19,6 +20,7 @@ const [leads, setLeads] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
   const loadLeads = async () => {
     try {
       setLoading(true);
@@ -121,7 +123,7 @@ const updatedLead = await leadsService.addActivity(leadId, activityData);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold text-gray-900 mb-2">
             Leads Management
@@ -130,13 +132,23 @@ const updatedLead = await leadsService.addActivity(leadId, activityData);
             Manage your network marketing leads and track their progress
           </p>
         </div>
-        <Button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center"
-        >
-          <ApperIcon name="Plus" className="h-4 w-4 mr-2" />
-          Add New Lead
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setIsCSVImportOpen(true)}
+            variant="outline"
+            className="flex items-center"
+          >
+            <ApperIcon name="Upload" className="h-4 w-4 mr-2" />
+            Import CSV
+          </Button>
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center"
+          >
+            <ApperIcon name="Plus" className="h-4 w-4 mr-2" />
+            Add New Lead
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -184,7 +196,13 @@ const updatedLead = await leadsService.addActivity(leadId, activityData);
         onSubmit={handleAddLead}
       />
 
-<LeadDetailModal
+      <CSVImportModal
+        isOpen={isCSVImportOpen}
+        onClose={() => setIsCSVImportOpen(false)}
+        onImport={loadLeads}
+      />
+
+      <LeadDetailModal
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetailModal}
         lead={selectedLead}
