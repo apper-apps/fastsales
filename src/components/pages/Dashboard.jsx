@@ -8,6 +8,7 @@ import Error from '@/components/ui/Error'
 import Pipeline from '@/components/pages/Pipeline'
 import Button from '@/components/atoms/Button'
 import ReminderCard from '@/components/molecules/ReminderCard'
+import AnalyticsCharts from '@/components/organisms/AnalyticsCharts'
 
 const Dashboard = () => {
 const [leads, setLeads] = useState([]);
@@ -47,11 +48,16 @@ const loadLeads = async () => {
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadLeads} />;
 
-  const metrics = {
+const metrics = {
     totalLeads: leads.length,
     activeProspects: leads.filter(lead => lead.status === "Interested").length,
     appointmentsScheduled: leads.filter(lead => lead.status === "Contacted").length,
     newLeads: leads.filter(lead => lead.status === "New").length,
+    closedWon: leads.filter(lead => lead.status === "Closed Won").length,
+    conversionRate: leads.length > 0 ? ((leads.filter(lead => lead.status === "Closed Won").length / leads.length) * 100).toFixed(1) : 0,
+    pipelineValue: leads.filter(lead => lead.contractValue && !['Closed Won', 'Closed Lost'].includes(lead.status))
+      .reduce((sum, lead) => sum + lead.contractValue, 0),
+    avgAIScore: leads.length > 0 ? (leads.reduce((sum, lead) => sum + (lead.aiScore || 0), 0) / leads.length).toFixed(0) : 0
   };
 
   return (
@@ -95,7 +101,54 @@ value={metrics.newLeads}
           trendValue="+5 this week"
         />
       </div>
+{/* Analytics Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Performance Analytics</h2>
+              <p className="text-gray-600">Key metrics and trends for your sales pipeline</p>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <ApperIcon name="RefreshCw" className="h-4 w-4" />
+              <span>Updated {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+          
+          {/* Enhanced Metrics Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <MetricCard
+              title="Conversion Rate"
+              value={`${metrics.conversionRate}%`}
+              icon="Target"
+              trend={parseFloat(metrics.conversionRate) > 10 ? "up" : "down"}
+              trendValue={`${metrics.closedWon} won`}
+            />
+            <MetricCard
+              title="Pipeline Value"
+              value={`$${metrics.pipelineValue.toLocaleString()}`}
+              icon="DollarSign"
+              trend="up"
+              trendValue="Active deals"
+            />
+            <MetricCard
+              title="Lead Quality Score"
+              value={metrics.avgAIScore}
+              icon="Brain"
+              trend={parseFloat(metrics.avgAIScore) > 70 ? "up" : "down"}
+              trendValue="AI Score avg"
+            />
+            <MetricCard
+              title="Active Pipeline"
+              value={metrics.totalLeads - metrics.closedWon - leads.filter(lead => lead.status === "Closed Lost").length}
+              icon="Users"
+              trend="up"
+              trendValue="In progress"
+            />
+          </div>
 
+          {/* Analytics Charts */}
+          <AnalyticsCharts />
+        </div>
       {/* Follow-up Reminders Section */}
       {reminders.length > 0 && (
         <div className="mb-8">
