@@ -215,10 +215,10 @@ const CSVImportModal = ({ isOpen, onClose, onImport }) => {
           }
         }
 
-        // Validate phone format (basic validation)
+// Validate phone format (basic validation)
         if (result.mappedData.phone) {
-          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-          const cleanPhone = result.mappedData.phone.replace(/[\s\-\(\)]/g, '');
+          const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+          const cleanPhone = result.mappedData.phone.replace(/[\s\-()]/g, '');
           if (!phoneRegex.test(cleanPhone)) {
             result.warnings.push('Phone number format may be invalid');
           }
